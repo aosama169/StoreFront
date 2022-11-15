@@ -18,7 +18,7 @@ export class OrdersClass {
 
       return orders.rows;
     } catch (error) {
-      throw new Error('Could not get Orders. Error: ${error}');
+      throw new Error('Could not get Orders. Error: ' + error);
     }
   }
 
@@ -30,7 +30,33 @@ export class OrdersClass {
       const order = await conn.query(query, [id]);
       return order.rows[0];
     } catch (error) {
-      throw new Error('Could not get Order. Error: ${error}');
+      throw new Error('Could not get Order. Error: ' + error);
+    }
+  }
+
+  async currentOrder(userId: number): Promise<Orders> {
+    try {
+      const conn = await Client.connect();
+      const query =
+        'SELECT * FROM orders WHERE USER_ID = $1 AND ORDER_STATUS = 0 LIMIT 1';
+
+      const order = await conn.query(query, [userId]);
+      return order.rows[0];
+    } catch (error) {
+      throw new Error('Could not get Order. Error: ' + error);
+    }
+  }
+
+  async completedOrders(userId: number): Promise<Orders> {
+    try {
+      const conn = await Client.connect();
+      const query =
+        'SELECT * FROM orders WHERE USER_ID = $1 AND ORDER_STATUS = 1';
+
+      const order = await conn.query(query, [userId]);
+      return order.rows[0];
+    } catch (error) {
+      throw new Error('Could not get Order. Error: ' + error);
     }
   }
 
@@ -49,7 +75,7 @@ export class OrdersClass {
 
       return newOrder.rows[0];
     } catch (error) {
-      throw new Error('Could not create Order. Error: ${error}');
+      throw new Error('Could not create Order. Error: ' + error);
     }
   }
 
@@ -67,7 +93,7 @@ export class OrdersClass {
 
       return newOrder.rows[0];
     } catch (error) {
-      throw new Error('Could not update Order. Error: ${error}');
+      throw new Error('Could not update Order. Error: ' + error);
     }
   }
 
@@ -81,7 +107,7 @@ export class OrdersClass {
 
       return result.rowCount > 0;
     } catch (error) {
-      throw new Error('Could not delete Order. Error: ${error}');
+      throw new Error('Could not delete Order. Error: ' + error);
     }
   }
 }

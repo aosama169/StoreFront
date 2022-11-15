@@ -12,14 +12,14 @@ console.log("I'm Working on the " + ENV + ' Database!');
 if (ENV === 'test') {
   Client = new Pool({
     host: DBHOST,
-    database: DBNAME,
+    database: DBNAMETEST,
     user: DBUSER,
     password: DBPASSWORD
   });
 } else {
   Client = new Pool({
     host: DBHOST,
-    database: DBNAMETEST,
+    database: DBNAME,
     user: DBUSER,
     password: DBPASSWORD
   });

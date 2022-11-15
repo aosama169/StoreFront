@@ -9,11 +9,16 @@ const auth = (
   res: express.Response,
   next: express.NextFunction
 ): void => {
-  jwt.sign(
-    {
-      data: 'foobar'
-    },
-    'secret',
-    { expiresIn: '1h' }
-  );
+  try {
+    const token: string = req.body.token;
+    jwt.verify(token, process.env.JWT_PASSWORD as string);
+  } catch (err) {
+    res.status(401);
+    res.json('Access denied, invalid token ' + err);
+    return;
+  }
+
+  next();
 };
+
+export default auth;

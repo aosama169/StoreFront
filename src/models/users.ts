@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 
 export type Users = {
   id?: number;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   password?: string;
   token?: string;
@@ -24,7 +24,7 @@ export class UsersClass {
 
       return result.rows;
     } catch (error) {
-      throw new Error('Could not get Users. Error: ${error}');
+      throw new Error('Could not get Users. Error: ' + error);
     }
   }
 
@@ -35,10 +35,11 @@ export class UsersClass {
       const query = 'SELECT * FROM users WHERE id = $1';
       const result = await conn.query(query, [id]);
       conn.release();
-
-      return result.rows[0];
+      const _user = result.rows[0];
+      delete _user.password;
+      return _user;
     } catch (error) {
-      throw new Error('Could not get Users. Error: ${error}');
+      throw new Error('Could not get Users. Error: ' + error);
     }
   }
 
@@ -46,7 +47,7 @@ export class UsersClass {
     try {
       const conn = await Client.connect();
       const query =
-        'INSERT INTO users (firstName, lastName, email, password) VALUES ($1, $2, $3, $4) RETURNING *';
+        'INSERT INTO users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4) RETURNING *';
 
       const hashedPassword = bcrypt.hashSync(
         ((user.password as string) + process.env.BCRYPT_PASS) as string,
@@ -54,16 +55,19 @@ export class UsersClass {
       );
 
       const result = await conn.query(query, [
-        user.firstName,
-        user.lastName,
+        user.first_name,
+        user.last_name,
         user.email,
         hashedPassword
       ]);
 
       conn.release();
-      return result.rows[0];
+
+      const _user = result.rows[0];
+      delete _user.password;
+      return _user;
     } catch (error) {
-      throw new Error('Could not create Users. Error: ${error}');
+      throw new Error('Could not create Users. Error: ' + error);
     }
   }
 
@@ -72,15 +76,15 @@ export class UsersClass {
       const conn = await Client.connect();
 
       const query =
-        'UPDATE users SET firstName = $1, lastName = $2, email = $3, password = $4 WHERE id = $5 RETURNING *';
+        'UPDATE users SET first_name = $1, last_name = $2, email = $3, password = $4 WHERE id = $5 RETURNING *';
       const hashedPassword = bcrypt.hashSync(
         ((user.password as string) + process.env.BCRYPT_PASS) as string,
         parseInt(process.env.BCRYPT_SALT as string)
       );
 
       const result = await conn.query(query, [
-        user.firstName,
-        user.lastName,
+        user.first_name,
+        user.last_name,
         user.email,
         hashedPassword,
         id
@@ -88,9 +92,11 @@ export class UsersClass {
 
       conn.release();
 
-      return result.rows[0];
+      const _user = result.rows[0];
+      delete _user.password;
+      return _user;
     } catch (error) {
-      throw new Error('Could not update Users. Error: ${error}');
+      throw new Error('Could not update Users. Error: ' + error);
     }
   }
 
@@ -105,34 +111,38 @@ export class UsersClass {
 
       return result.rowCount > 0;
     } catch (error) {
-      throw new Error('Could not delete Users. Error: ${error}');
+      throw new Error('Could not delete Users. Error: ' + error);
     }
   }
 
-  async Authenticate(email: string, password: string): Promise<string> {
+  async Authenticate(email: string, password: string): Promise<Users> {
     try {
       const conn = await Client.connect();
 
-      const query = 'SELECT password FROM users WHERE email = $1';
+      const query = 'SELECT * FROM users WHERE email = $1';
       const result = await conn.query(query, [email]);
       conn.release();
 
       if (result.rows.length > 0) {
-        const hashedPassword = bcrypt.hashSync(
-          ((password as string) + process.env.BCRYPT_PASS) as string,
-          parseInt(process.env.BCRYPT_SALT as string)
-        );
+        const _user = result.rows[0];
 
-        if (result.rows[0].password === hashedPassword) {
-          return 'logged in';
+        if (
+          bcrypt.compareSync(
+            (password as string) + process.env.BCRYPT_PASS,
+            _user.password
+          )
+        ) {
+          //logged in .
+          delete _user.password;
+          return _user;
         } else {
-          return 'Wrong password';
+          throw new Error('Wrong password');
         }
       } else {
-        return 'Wrong User Email';
+        throw new Error('Wrong User Email');
       }
     } catch (error) {
-      throw new Error('Could not authenticate Users. Error: ${error}');
+      throw new Error('Could not authenticate Users. Error: ' + error);
     }
   }
 }

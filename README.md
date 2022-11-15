@@ -2,53 +2,64 @@
 
 ## Getting Started
 
-This repo contains a basic Node and Express app to get you started in constructing an API. To get started, clone this repo and run `yarn` in your terminal at the project root.
+This is a Backend project that Represents the backend functionality of store .
 
-## Required Technologies
-Your application must make use of the following libraries:
-- Postgres for the database
-- Node/Express for the application logic
-- dotenv from npm for managing environment variables
-- db-migrate from npm for migrations
-- jsonwebtoken from npm for working with JWTs
-- jasmine from npm for testing
+# Available Services and endpoints.
 
-## Steps to Completion
+Main Endpoint : http://localhost:3030/
 
-### 1. Plan to Meet Requirements
+# Product Services:
+Index : /products [GET]
+Show by ID : /products/:id [GET]
+Update : /products/:id [PUT]
+Create : /products [POST]
+Delete : /products/:id [DELETE]
+Show Top Five Popular : /topProducts [GET]
+Show by Category : /products/:category [GET]
 
-In this repo there is a `REQUIREMENTS.md` document which outlines what this API needs to supply for the frontend, as well as the agreed upon data shapes to be passed between front and backend. This is much like a document you might come across in real life when building or extending an API. 
+# orders Services:
+Index : /orders [GET]
+Show by ID : /orders/:id [GET]
+Update : /orders/:id [PUT]
+Create : /orders [POST]
+Delete : /orders/:id [DELETE]
+UnCompeleted Order : /currentOrder/:userId [GET]
+Compeleted Orders : /completedOrders/:userId [GET]
 
-Your first task is to read the requirements and update the document with the following:
-- Determine the RESTful route for each endpoint listed. Add the RESTful route and HTTP verb to the document so that the frontend developer can begin to build their fetch requests.    
-**Example**: A SHOW route: 'blogs/:id' [GET] 
+# users Services:
 
-- Design the Postgres database tables based off the data shape requirements. Add to the requirements document the database tables and columns being sure to mark foreign keys.   
-**Example**: You can format this however you like but these types of information should be provided
-Table: Books (id:varchar, title:varchar, author:varchar, published_year:varchar, publisher_id:string[foreign key to publishers table], pages:number)
+Show by ID : /users/:id [GET]
+Update : /users/:id [PUT]
+Create : /users [POST]
+Delete : /users/:id [DELETE]
+Login : /auth [POST]
 
-**NOTE** It is important to remember that there might not be a one to one ratio between data shapes and database tables. Data shapes only outline the structure of objects being passed between frontend and API, the database may need multiple tables to store a single shape. 
+# Database Tables:
+we have three tables, the creation script could be found in the migration folder under the sql folder.
+Users, Orders and product.
 
-### 2.  DB Creation and Migrations
 
-Now that you have the structure of the databse outlined, it is time to create the database and migrations. Add the npm packages dotenv and db-migrate that we used in the course and setup your Postgres database. If you get stuck, you can always revisit the database lesson for a reminder. 
+# Creating Database and User Needed to run this Project.
 
-You must also ensure that any sensitive information is hashed with bcrypt. If any passwords are found in plain text in your application it will not pass.
+To be able to run this project you need to create the database user and give it create database permission.
+run the following command on psql server
+- `CREATE USER store_front_usr WITH PASSWORD 'store';`
+- `alter user store_front_usr createdb;`
 
-### 3. Models
+run the following command on node server to create the database.
+- `db-migrate db:create dev`
+- `db-migrate up`
 
-Create the models for each database table. The methods in each model should map to the endpoints in `REQUIREMENTS.md`. Remember that these models should all have test suites and mocks.
+then you can start the project by running the following command:
+- `npm run start`
 
-### 4. Express Handlers
+You Can run the Tests using Command:
+- `npm run test`
 
-Set up the Express handlers to route incoming requests to the correct model method. Make sure that the endpoints you create match up with the enpoints listed in `REQUIREMENTS.md`. Endpoints must have tests and be CORS enabled. 
+Use Lint using: 
+- `npm run lint` 
 
-### 5. JWTs
+Run Prettier using:
+- `npm run prettier`
 
-Add JWT functionality as shown in the course. Make sure that JWTs are required for the routes listed in `REQUIUREMENTS.md`.
-
-### 6. QA and `README.md`
-
-Before submitting, make sure that your project is complete with a `README.md`. Your `README.md` must include instructions for setting up and running your project including how you setup, run, and connect to your database. 
-
-Before submitting your project, spin it up and test each endpoint. If each one responds with data that matches the data shapes from the `REQUIREMENTS.md`, it is ready for submission!
+-- Note That env file is added to the repo to be able to run this project.
