@@ -10,7 +10,7 @@ const auth = (
   next: express.NextFunction
 ): void => {
   try {
-    const token: string = req.body.token;
+    const token: string = req.headers.token as string;
     jwt.verify(token, process.env.JWT_PASSWORD as string);
   } catch (err) {
     res.status(401);

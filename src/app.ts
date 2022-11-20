@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import usersRoutes from './handlers/users';
 import productRoutes from './handlers/product';
 import ordersRoutes from './handlers/orders';
+import invoicesRoutes from './handlers/invoice';
 import cors from 'cors';
 
 const app: express.Application = express();
@@ -13,7 +14,7 @@ app.use(bodyParser.json());
 usersRoutes(app);
 productRoutes(app);
 ordersRoutes(app);
-
+invoicesRoutes(app);
 //Main EndPoint.
 app.get('*', cors(), (req: Request, res: Response): void => {
   res.send(

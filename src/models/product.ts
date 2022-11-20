@@ -41,7 +41,7 @@ export class ProductClass {
       const conn = await Client.connect();
       const query =
         'SELECT P.ID, P.NAME, P.PRICE, P.CATEGORY, count(*) as counts ' +
-        'FROM ORDERS O' +
+        'FROM INVOICE O' +
         'INNER JOIN PRODUCT P ON P.ID = O.PRODUCT_ID' +
         'group by P.ID' +
         'order by counts DESC, NAME ASC' +

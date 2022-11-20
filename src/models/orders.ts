@@ -2,17 +2,15 @@ import Client from '../database';
 
 export type Orders = {
   id?: number;
-  productID: number;
-  quantity: number;
-  userId: number;
-  orderStatus: boolean;
+  user_id: number;
+  order_status: boolean;
 };
 
 export class OrdersClass {
   async index(): Promise<Orders[]> {
     try {
       const conn = await Client.connect();
-      const query = 'SELECT * FROM orders';
+      const query = 'SELECT * FROM ORDERS';
 
       const orders = await conn.query(query);
 
@@ -25,7 +23,7 @@ export class OrdersClass {
   async show(id: number): Promise<Orders> {
     try {
       const conn = await Client.connect();
-      const query = 'SELECT * FROM orders WHERE id = $1';
+      const query = 'SELECT * FROM ORDERS WHERE id = $1';
 
       const order = await conn.query(query, [id]);
       return order.rows[0];
@@ -34,43 +32,54 @@ export class OrdersClass {
     }
   }
 
-  async currentOrder(userId: number): Promise<Orders> {
+  async currentOrder(user_id: number): Promise<Orders> {
     try {
       const conn = await Client.connect();
       const query =
-        'SELECT * FROM orders WHERE USER_ID = $1 AND ORDER_STATUS = 0 LIMIT 1';
+        'SELECT * FROM ORDERS WHERE USER_ID = $1 AND ORDER_STATUS = 0 LIMIT 1';
 
-      const order = await conn.query(query, [userId]);
+      const order = await conn.query(query, [user_id]);
       return order.rows[0];
     } catch (error) {
       throw new Error('Could not get Order. Error: ' + error);
     }
   }
 
-  async completedOrders(userId: number): Promise<Orders> {
+  async completedOrders(user_id: number): Promise<Orders[]> {
     try {
       const conn = await Client.connect();
       const query =
-        'SELECT * FROM orders WHERE USER_ID = $1 AND ORDER_STATUS = 1';
+        'SELECT * FROM ORDERS WHERE USER_ID = $1 AND ORDER_STATUS = 1';
 
-      const order = await conn.query(query, [userId]);
-      return order.rows[0];
+      const order = await conn.query(query, [user_id]);
+      return order.rows;
     } catch (error) {
       throw new Error('Could not get Order. Error: ' + error);
     }
   }
+  
+  async orderStatus(order_id: number): Promise<string> {
+    try {
+      const conn = await Client.connect();
+      const query =
+        'SELECT (CASE WHEN order_status = FALSE THEN \'ACTIVE\' ELSE \'COMPLETED\' END) AS order_status  FROM ORDERS WHERE ID = $1';
 
+      const order = await conn.query(query, [order_id]);
+      return order.rows[0].order_status;
+    } catch (error) {
+      throw new Error('Could not get Order. Error: ' + error);
+    }
+  }
+  
   async create(order: Orders): Promise<Orders> {
     try {
       const conn = await Client.connect();
       const query =
-        'INSERT INTO orders (productID, quantity, userId, orderStatus) VALUES ($1, $2, $3, $4) RETURNING *';
+        'INSERT INTO ORDERS (USER_ID, ORDER_STATUS) VALUES ($1, $2) RETURNING *';
 
       const newOrder = await conn.query(query, [
-        order.productID,
-        order.quantity,
-        order.userId,
-        order.orderStatus
+        order.user_id,
+        order.order_status
       ]);
 
       return newOrder.rows[0];
@@ -83,12 +92,11 @@ export class OrdersClass {
     try {
       const conn = await Client.connect();
       const query =
-        'UPDATE orders SET productID = $1, quantity = $2, userId nWHERE id = $3 RETURNING *';
+        'UPDATE ORDERS SET USER_ID = $1, ORDER_STATUS = $2 WHERE id = $3 RETURNING *';
 
       const newOrder = await conn.query(query, [
-        order.productID,
-        order.quantity,
-        order.userId
+        order.user_id,
+        order.order_status
       ]);
 
       return newOrder.rows[0];
@@ -100,7 +108,7 @@ export class OrdersClass {
   async delete(id: number): Promise<boolean> {
     try {
       const conn = await Client.connect();
-      const query = 'DELETE FROM orders WHERE id = $1';
+      const query = 'DELETE FROM ORDERS WHERE id = $1';
 
       const result = await conn.query(query, [id]);
       conn.release();

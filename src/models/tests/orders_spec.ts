@@ -28,4 +28,14 @@ describe('orders class', () => {
   it('Should get that there is no orders in the db', async () => {
     expect(await orders.index()).toEqual([]);
   });
+
+  /*could not test order functions as it requires data inserted from user table.
+  it('try insert order with user that is not found', async () => {
+    expect(await orders.create({
+      user_id : 1,
+      order_status : false
+    })).toThrowError;
+  });
+*/
+
 });

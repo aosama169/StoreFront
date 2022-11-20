@@ -1,6 +1,8 @@
 import Client from '../database';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
+import { Response } from 'express';
+import { QueryResult } from 'pg';
 
 export type Users = {
   id?: number;
@@ -116,33 +118,33 @@ export class UsersClass {
   }
 
   async Authenticate(email: string, password: string): Promise<Users> {
+    let result : QueryResult;
     try {
       const conn = await Client.connect();
-
       const query = 'SELECT * FROM users WHERE email = $1';
-      const result = await conn.query(query, [email]);
+      result = await conn.query(query, [email]);
       conn.release();
+      
+    } catch (error) {
+      throw new Error('Could not authenticate Users. Error: ' + error);
+    }
 
       if (result.rows.length > 0) {
         const _user = result.rows[0];
-
         if (
           bcrypt.compareSync(
             (password as string) + process.env.BCRYPT_PASS,
             _user.password
           )
         ) {
-          //logged in .
+          
           delete _user.password;
           return _user;
         } else {
           throw new Error('Wrong password');
         }
       } else {
-        throw new Error('Wrong User Email');
+        throw new Error("Wrong User Email");
       }
-    } catch (error) {
-      throw new Error('Could not authenticate Users. Error: ' + error);
-    }
   }
 }

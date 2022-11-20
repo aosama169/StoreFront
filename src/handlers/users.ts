@@ -6,26 +6,23 @@ import auth from '../utilities/auth';
 
 const users = new UsersClass();
 
-/* ----------------
- *Removed Users Data From Routes .
-
 const indexed = async (req: Request, res: Response) => {
   let _users : Users[] ;
   try{
     _users = await users.index();
   } catch (error) {
-    res.status(501).json({ error });
+    res.status(501).json({ "Error Message":(error as Error).message });
     return;
   }
   res.json(_users);
 };
-*/
+
 const showed = async (req: Request, res: Response) => {
   let _users: Users;
   try {
     _users = await users.show(parseInt(req.params.id));
   } catch (error) {
-    res.status(501).json({ error });
+    res.status(501).json({ "Error Message":(error as Error).message });
     return;
   }
   res.json(_users);
@@ -42,7 +39,7 @@ const created = async (req: Request, res: Response) => {
       { expiresIn: '1h' }
     );
   } catch (error) {
-    res.status(401).json({ error });
+    res.status(401).json({ "Error Message":(error as Error).message });
     return;
   }
 
@@ -51,7 +48,7 @@ const created = async (req: Request, res: Response) => {
   try {
     _users = await users.create(req.body);
   } catch (error) {
-    res.status(501).json({ error });
+    res.status(501).json({ "Error Message":(error as Error).message });
     return;
   }
 
@@ -65,7 +62,7 @@ const updated = async (req: Request, res: Response) => {
   try {
     _users = await users.update(parseInt(req.params.id), req.body);
   } catch (error) {
-    res.status(501).json({ error });
+    res.status(501).json({ "Error Message":(error as Error).message });
     return;
   }
   res.json(_users);
@@ -76,7 +73,7 @@ const deleted = async (req: Request, res: Response) => {
   try {
     _users = await users.delete(parseInt(req.params.id));
   } catch (error) {
-    res.status(501).json({ error });
+    res.status(501).json({ "Error Message":(error as Error).message });
     return;
   }
 
@@ -90,9 +87,9 @@ const deleted = async (req: Request, res: Response) => {
 const authenticated = async (req: Request, res: Response) => {
   let _users: Users;
   try {
-    _users = await users.Authenticate(req.params.email, req.params.password);
+    _users = await users.Authenticate(req.body.email, req.body.password);
   } catch (error) {
-    res.status(401).json({ error });
+    res.status(401).json({ "Error Message":(error as Error).message });
     return;
   }
 
@@ -106,7 +103,7 @@ const authenticated = async (req: Request, res: Response) => {
       { expiresIn: '1h' }
     );
   } catch (error) {
-    res.status(401).json({ error });
+    res.status(401).json({ "Error Message":(error as Error).message });
     return;
   }
 
@@ -116,12 +113,12 @@ const authenticated = async (req: Request, res: Response) => {
 };
 
 const usersRoutes = (app: express.Application) => {
-  //app.get('/users', indexed);
+  app.get('/users', cors(), auth, indexed);
   app.get('/users/:id', cors(), auth, showed);
   app.put('/users/:id', cors(), auth, updated);
-  app.post('/users', cors(), auth, created);
+  app.post('/users', cors(), created);
   app.delete('/users/:id', cors(), auth, deleted);
-  app.post('/auth', cors(), auth, authenticated);
+  app.post('/auth', cors(), authenticated);
 };
 
 export default usersRoutes;

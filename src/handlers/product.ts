@@ -10,7 +10,7 @@ const indexed = async (req: Request, res: Response) => {
   try {
     products = await product.index();
   } catch (error) {
-    res.status(501).json({ error });
+    res.status(501).json({ "Error Message":(error as Error).message });
     return;
   }
   res.json(products);
@@ -21,7 +21,7 @@ const showed = async (req: Request, res: Response) => {
   try {
     products = await product.show(parseInt(req.params.id));
   } catch (error) {
-    res.status(501).json({ error });
+    res.status(501).json({ "Error Message":(error as Error).message });
     return;
   }
   res.json(products);
@@ -32,7 +32,7 @@ const created = async (req: Request, res: Response) => {
   try {
     products = await product.create(req.body);
   } catch (error) {
-    res.status(501).json({ error });
+    res.status(501).json({ "Error Message":(error as Error).message });
     return;
   }
   res.json(products);
@@ -43,7 +43,7 @@ const updated = async (req: Request, res: Response) => {
   try {
     products = await product.update(parseInt(req.params.id), req.body);
   } catch (error) {
-    res.status(501).json({ error });
+    res.status(501).json({ "Error Message":(error as Error).message });
     return;
   }
   res.json(products);
@@ -54,7 +54,7 @@ const deleted = async (req: Request, res: Response) => {
   try {
     products = await product.delete(parseInt(req.params.id));
   } catch (error) {
-    res.status(501).json({ error });
+    res.status(501).json({ "Error Message":(error as Error).message });
     return;
   }
 
@@ -70,7 +70,7 @@ const topFive = async (req: Request, res: Response) => {
   try {
     products = await product.topFive();
   } catch (error) {
-    res.status(501).json({ error });
+    res.status(501).json({ "Error Message":(error as Error).message });
     return;
   }
   res.json(products);
@@ -80,7 +80,7 @@ const showCat = async (req: Request, res: Response) => {
   try {
     products = await product.showCat(req.params.category);
   } catch (error) {
-    res.status(501).json({ error });
+    res.status(501).json({ "Error Message":(error as Error).message });
     return;
   }
   res.json(products);
